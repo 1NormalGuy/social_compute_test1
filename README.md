@@ -1,17 +1,20 @@
 # 豆瓣电影爬虫
-武汉大学2022-2023学年国家网络安全学院社会计算课程第一次实验作业
+武汉大学2022-2023学年国家网络安全学院社会计算课程第一次实验作业——2019年度电影报告
 ## 项目结构介绍（不完善版）
 - main.py
   主函数
 - dic.py
   内含13部具体电影名及其编号值的字典
 - emo.py
-  使用$snownlp$库进行评论情感分析
+  使用*snownlp*库进行评论情感分析
 - get_comment.py
-- get_html.py
 - get_info.py
+
+- get_html.py
+  辅助函数，用于分析html文档对应着写爬虫
 ## 声明
-- 本代码由[Luinage](https://1normalguy.github.io/)和[modric](https://github.com/m0dric)合作完成，享有同样著作权，在实验中使用请注明代码来源和$repo$地址，并$fork$此repo，否则将定性为**抄袭**
-- 代码为两个爬虫新手练手所写，因此代码可能还存在一定的*bug*,如果有改良意见可以[mail me](Luinage@outllook.com),谢谢你对开源实验课程代码的支持！
+- 本代码由[Luinage](https://1normalguy.github.io/)和[modric](https://github.com/m0dric)合作完成，享有同样著作权，在实验中使用请注明代码来源和*repo*地址，并*fork*此*repo*，否则将定性为**抄袭**
+- 代码为两个爬虫新手练手所写，因此代码可能还存在一定的*bug*,如果有改良意见可以[mail me](Luinage@outllook.com),感谢你对开源实验课程代码的支持！
 - 代码中的代理地址为临时IP，并不能长期使用
+- 如果遇到长期无法爬下数据可以将爬取地区的代码先注释，因为2019年的电影评论还未显示IP地址，无法只在同一页进行数据爬取，需要对每个评论者的主页发*request*，大概率会被墙，但是代码逻辑是没问题的
 - ...（待添加）
