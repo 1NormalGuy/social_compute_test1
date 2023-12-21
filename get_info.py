@@ -6,16 +6,9 @@ import time
 import dic
 from bs4 import BeautifulSoup
 import csv
+import random
 
-tunnel = "y525.kdltps.com:15818"
 
-# 用户名密码方式
-username = "t10306954173313"
-password = "ucdxints"
-proxies = {
-    "http": "http://%(user)s:%(pwd)s@%(proxy)s/" % {"user": username, "pwd": password, "proxy": tunnel},
-    "https": "http://%(user)s:%(pwd)s@%(proxy)s/" % {"user": username, "pwd": password, "proxy": tunnel}
-}
 def get_excel(filepath, allinfo):
     try:
         if not os.path.exists(filepath):
@@ -26,7 +19,8 @@ def get_excel(filepath, allinfo):
             ws.title = 'sheet1'
             ws.append(tableTitle)
             wb.save(filepath)
-            time.sleep(3)
+            crawl_interval = random.randint(2,4) 
+            time.sleep(crawl_interval)
 
         wb = load_workbook(filepath)
         ws = wb.active
@@ -40,7 +34,7 @@ def get_excel(filepath, allinfo):
 
 def getfilminfo(url,headers):
     filminfo = []
-    r = requests.get(url, headers=headers,proxies=proxies, timeout=10)
+    r = requests.get(url, headers=headers,timeout=10)
     r.raise_for_status()
     r.encoding = 'utf-8'
     soup = BeautifulSoup(r.text, 'html.parser')
@@ -90,7 +84,7 @@ def getfilminfo(url,headers):
     filminfo.append(area)
     filminfo.append(language)
     filminfo.append(times)
-    filepath = './information/TOP10.xlsx'
+    filepath = './information/TOP13.xlsx'
     get_excel(filepath,filminfo)
 
 

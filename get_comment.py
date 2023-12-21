@@ -6,40 +6,36 @@ from bs4 import BeautifulSoup
 from openpyxl import Workbook, load_workbook
 from random import randint
 import csv
-import random
 
 tunnel = "y525.kdltps.com:15818"
 
-# 用户名密码方式
-username = "t10306954173313"
-password = "ucdxints"
-proxies = {
-    "http": "http://%(user)s:%(pwd)s@%(proxy)s/" % {"user": username, "pwd": password, "proxy": tunnel},
-    "https": "http://%(user)s:%(pwd)s@%(proxy)s/" % {"user": username, "pwd": password, "proxy": tunnel}
-}
+# #request
+# def get_html(url,headers,flag):
+#     # 使用requests.get获取网页内容
+#     response = requests.get(url, headers=headers,proxies=proxies)
 
-#request
-def get_html(url,headers,flag):
-    # 使用requests.get获取网页内容
-   # proxy = proxies
-    response = requests.get(url, headers=headers,proxies=proxies)
+#     # 检查请求是否成功（状态码为200）
+#     if response.status_code == 200:
+#         return response.text
+#     else:
+#         return None
 
-    # 检查请求是否成功（状态码为200）
-    if response.status_code == 200:
-        if flag==0:
-            print(f"请求成功，状态码：{response.status_code}")
-        # 返回HTML内容
-        return response.text
-    else:
-        if flag==0:
+def get_html(url,headers):
+    while True:
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            return response.text
+        else:
             print(f"请求失败，状态码：{response.status_code}")
-        return None
+            print("等待5秒后重试...")
+            time.sleep(5)
 
-def get_comments(url,headers):
+def get_comments(url,headers,arr):
     # 使用requests.get获取网页内容
-    html=get_html(url,headers,0)
+    html=get_html(url,headers)
     if html:
-        get_user_url(html)
+        #收集地区信息
+        get_locations(html, arr)
         soup = BeautifulSoup(html, 'lxml')
         comments = []
         comment_divs = soup.find_all('p', {'class': 'comment-content'})
@@ -52,6 +48,51 @@ def get_comments(url,headers):
     return None
 
 
+def get_locations(html,arr):
+    if html:
+        soup = BeautifulSoup(html, 'lxml')
+        locations = []
+        locations_divs = soup.find_all('span', {'class': 'comment-location'})
+        for locations_div in locations_divs:
+            if locations_div:
+                locations.append(locations_div.text)
+
+        for ip in locations:
+            if ip:
+                if ip not in dic.comment_location:
+                    ip = '海外'
+                arr[dic.comment_location[ip]] = arr[dic.comment_location[ip]] + 1
+
+
+def save_comments(comments, filename):
+    # 使用'a'模式打开文件，这将会创建一个新的文件或续写已存在的文件
+    with open(filename, 'a', encoding='utf-8') as f:
+        writer = csv.writer(f)
+        for comment in comments:
+            # 写入一行数据
+            writer.writerow([comment])
+
+
+def get_excel(filepath, allinfo):
+    try:
+        if not os.path.exists(filepath):
+            tableTitle = [" ","河北","山西","辽宁","吉林","黑龙江","江苏","浙江","安徽","福建","江西","山东","河南","湖北","湖南","广东","海南","四川","贵州","云南","陕西","甘肃","青海","台湾"
+,"内蒙古","广西","西藏","宁夏","新疆","北京","天津","上海","重庆","香港","澳门",'海外']
+            wb = Workbook()
+            ws = wb.active
+            ws.title = 'sheet1'
+            ws.append(tableTitle)
+            wb.save(filepath)
+
+        wb = load_workbook(filepath)
+        ws = wb.active
+        ws.title = 'sheet1'
+        ws.append(allinfo)
+        wb.save(filepath)
+        return True
+    except:
+        return False
+"""
 #获取评论用户个人主页url
 def get_user_url(html):
     if html:
@@ -89,38 +130,4 @@ def get_locations(url,headers,arr):
                     if ip not in dic.comment_location:
                         ip = '海外'
                     arr[dic.comment_location[ip]]=arr[dic.comment_location[ip]]+1
-
-
-
-
-def save_comments(comments, filename):
-    # 使用'a'模式打开文件，这将会创建一个新的文件或续写已存在的文件
-    with open(filename, 'a', encoding='utf-8') as f:
-        writer = csv.writer(f)
-        for comment in comments:
-            # 写入一行数据
-            writer.writerow([comment])
-
-
-def get_excel(filepath, allinfo):
-    try:
-        if not os.path.exists(filepath):
-            tableTitle = [" ","河北","山西","辽宁","吉林","黑龙江","江苏","浙江","安徽","福建","江西","山东","河南","湖北","湖南","广东","海南","四川","贵州","云南","陕西","甘肃","青海","台湾"
-,"内蒙古","广西","西藏","宁夏","新疆","北京","天津","上海","重庆","香港","澳门",'海外']
-            wb = Workbook()
-            ws = wb.active
-            ws.title = 'sheet1'
-            ws.append(tableTitle)
-            wb.save(filepath)
-
-            crawl_interval = random.randint(2,4) 
-            time.sleep(crawl_interval)
-
-        wb = load_workbook(filepath)
-        ws = wb.active
-        ws.title = 'sheet1'
-        ws.append(allinfo)
-        wb.save(filepath)
-        return True
-    except:
-        return False
+"""
